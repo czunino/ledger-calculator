@@ -137,7 +137,7 @@ Run `python cli.py` for a list of commands and helpful output.
 #### Testing the CLI
 
 Run `python -m unittest tests.test_cli` for testing the command line. All test cases should pass if balances is
-implemented correctly. NOTE: With the given starter code you will pass 3 out of 16 tests out of the box. Please use
+implemented correctly. NOTE: With the given starter code you will pass 3 out of 17 tests out of the box. Please use
 the test suite to gauge your precision and accuracy. There are 13 tests for `balances`.
 
 ## Example
@@ -213,14 +213,14 @@ Advances:
 Identifier       Date      Initial Amt     Current Balance
          1 2021-05-22          2250.00                0.00
          2 2021-07-05          1200.00                0.00
-         3 2021-10-01           100.00                0.00
+         3 2021-08-04          1500.00              757.79
 
 Summary Statistics:
 ----------------------------------------------------------
-Aggregate Advance Balance:                            0.00
-Interest Payable Balance:                             0.00
+Aggregate Advance Balance:                          757.79
+Interest Payable Balance:                            55.43
 Total Interest Paid:                                 57.79
-Balance Applicable to Future Advances:              642.21
+Balance Applicable to Future Advances:                0.00
 
 $ python cli.py balances 2021-07-25
 Advances:
