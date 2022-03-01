@@ -1,0 +1,12 @@
+Advances:
+----------------------------------------------------------
+Identifier       Date      Initial Amt     Current Balance
+         1 2021-05-22        100000.00            99104.85
+         2 2021-06-23        200000.00           200000.00
+
+Summary Statistics:
+----------------------------------------------------------
+Aggregate Advance Balance:                       299104.85
+Interest Payable Balance:                          1110.60
+Total Interest Paid:                                104.85
+Balance Applicable to Future Advances:                0.00
