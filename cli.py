@@ -6,6 +6,7 @@ from decimal import Decimal
 import os
 import sqlite3
 from typing import Dict
+from balances_calculator import BalancesCalculator
 
 
 @click.group()
@@ -99,24 +100,47 @@ def balances(ctx: Dict, end_date: str = None) -> None:
     if end_date is None:
         end_date = datetime.now().date().isoformat()
 
-    overall_advance_balance = Decimal(0)
-    overall_interest_payable_balance = Decimal(0)
-    overall_interest_paid = Decimal(0)
-    overall_payments_for_future = Decimal(0)
+    # defines the end_date as datetime.date object
+    end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+
+    # inits the balances calculator
+    bc = BalancesCalculator(end_date=end_date)
 
     # query events from database example
     with sqlite3.connect(ctx.obj["DB_PATH"]) as connection:
         cursor = connection.cursor()
-        result = cursor.execute("select * from events order by date_created asc;")
+        result = cursor.execute(f"""
+            select * from events 
+            where date_created <= ? 
+            order by date_created asc;""", (end_date,))
         events = result.fetchall()
-        # TODO: FIXME Run interest calculation.
+
+        # loop and process events
+        for event in events:
+
+            event_type = event[1]
+            event_amount = Decimal(event[2])
+            event_date = datetime.strptime(event[3], '%Y-%m-%d').date()
+
+            bc.process_event(event_date=event_date, event_type=event_type, amount=event_amount)
+
+    # finish the balances calculation and get results
+    results = bc.finish_calculation_and_get_results()
 
     click.echo("Advances:")
     click.echo("----------------------------------------------------------")
     # NOTE: This initial print adheres to the format spec.
     click.echo("{0:>10}{1:>11}{2:>17}{3:>20}".format("Identifier", "Date", "Initial Amt", "Current Balance"))
 
-    # TODO: FIXME Print each advance row and relevant advance statistics
+    for i, advance in enumerate(results.advances):
+        click.echo("{0:>10}{1:>11}{2:>17.2f}{3:>20.2f}".format(
+            i + 1, advance.event_date.strftime("%Y-%m-%d"), advance.original_amount, advance.current_balance
+        ))
+
+    overall_advance_balance = results.overall_advance_balance
+    overall_interest_payable_balance = results.overall_interest_payable_balance
+    overall_interest_paid = results.overall_interest_paid
+    overall_payments_for_future = results.overall_payments_for_future
 
     # print summary statistics
     # NOTE: These prints adhere to the format spec.
